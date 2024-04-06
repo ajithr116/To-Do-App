@@ -1,10 +1,17 @@
-import React, {useState} from 'react';
-
+import React, {useState, useEffect} from 'react';
+import TaskInput from './components/TaskInput.jsx';
+import TaskItem from './components/TaskItem';
+import ClearButton from './components/ClearButton.jsx';
 
 function ToDoList(){
 
-    const [tasks, setTasks] = useState(["Eat breakfast","walk dog"]);
+    const initialTasks = JSON.parse(localStorage.getItem('tasks')) || ["Eat breakfast","walk dog"];
+    const [tasks, setTasks] = useState(initialTasks);
     const [newTask, setNewTask] = useState("");
+
+    useEffect(() => {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }, [tasks]);
 
     function handleInputChange(event){
         setNewTask(event.target.value);
@@ -12,15 +19,17 @@ function ToDoList(){
 
     function addTask(){
         if(newTask.trim()!==""){
-            setTasks(prev => [...prev, newTask]);
+            const updatedTasks = [...tasks, newTask];
+            setTasks(updatedTasks);
+            localStorage.setItem('tasks', JSON.stringify(updatedTasks));
             setNewTask("");
         }
-
     }
 
     function deleteTask(index){
-        const updateTasks = tasks.filter((element,i)=>i !== index);
-        setTasks(updateTasks);
+        const updatedTasks = tasks.filter((element,i)=>i !== index);
+        setTasks(updatedTasks);
+        localStorage.setItem('tasks', JSON.stringify(updatedTasks));
     }
 
     function moveTaskUp(index){
@@ -39,23 +48,21 @@ function ToDoList(){
         }
     }
 
+    function clearData(){
+        localStorage.removeItem('tasks');
+        setTasks([])
+    }
+
     return (
         <div className="to-do-list">
             <h1>To Do List</h1>
-            <div>
-                <input type="text" placeholder="Enter your task" value={newTask} onChange={handleInputChange}/>
-                <button className="add-button" onClick={addTask}>Add Task</button>
-            </div>
+            <TaskInput newTask={newTask} handleInputChange={handleInputChange} addTask={addTask} />
             <ol>
                 {tasks.map((task, index)=>
-                    <li key={index}>
-                        <span className="text">{task}</span>
-                        <button className="delete-button" onClick={()=>deleteTask(index)}> Delete</button>
-                        <button className="move-button" onClick={()=>moveTaskUp(index)}> Up</button>
-                        <button className="move-button" onClick={()=>moveTaskDown(index)}> Down</button>
-                    </li>
+                    <TaskItem key={index} task={task} index={index} deleteTask={deleteTask} moveTaskUp={moveTaskUp} moveTaskDown={moveTaskDown} />
                 )}
             </ol>
+            <ClearButton clearData={clearData}/>
         </div>
     )
 }

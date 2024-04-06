@@ -13,6 +13,7 @@ button{
   font-size: 1rem;
   font-weight: bold;
   padding:10px 20px;
+  border:1px solid black;
   color:black;
   border-radius: 5px;
   cursor:pointer;
@@ -72,4 +73,16 @@ li{
   padding:8px 12px;
   font-size:1rem;
   margin-left:10px;
+}
+
+.clear-button{
+  background-color:none;
+  color:red;
+  border:1px solid red;
+  font-weight: 100;
+}
+
+.clear-button:hover{
+  background-color:red;
+  color:white;
 }
